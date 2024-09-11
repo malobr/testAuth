@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Test;
+use App\Models\User;
 use Validator;
 
 class TestController extends Controller
@@ -15,21 +16,31 @@ class TestController extends Controller
         $this->middleware('auth:sanctum');
     }
 
+    // Listar todos os testes
     public function index()
     {
-        return Test::with('user')->get();
+        return response()->json(Test::with('user')->get(), 200);
+        //return response()->json(Test::all(), 200);
+    }
+    public function index1()
+    {
+       // return response()->json(Test::with('user')->get(), 200);
+        return response()->json(Test::all(), 200);
     }
 
+    // Exibir um teste específico
     public function show($id)
     {
-        return Test::findOrFail($id);
+        $test = Test::findOrFail($id);
+        return response()->json($test, 200);
     }
 
+    // Criar um novo teste
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
-            'test_name' => 'required|string',
+            'test_name' => 'required|string|max:255',
             'test_results' => 'required|string',
         ]);
 
@@ -46,16 +57,29 @@ class TestController extends Controller
         return response()->json($test, 201);
     }
 
+    // Atualizar um teste existente
     public function update(Request $request, $id)
     {
         $test = Test::findOrFail($id);
+
+        $validator = Validator::make($request->all(), [
+            'test_name' => 'required|string|max:255',
+            'test_results' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $test->update($request->all());
-        return response()->json($test);
+        return response()->json($test, 200);
     }
 
+    // Excluir um teste
     public function destroy($id)
     {
-        Test::destroy($id);
-        return response()->json(['message' => 'Test deleted']);
+        $test = Test::findOrFail($id);
+        $test->delete();
+        return response()->json(['message' => 'Test deleted successfully'], 200);
     }
 }
