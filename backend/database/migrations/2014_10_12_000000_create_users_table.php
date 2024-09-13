@@ -10,20 +10,21 @@ class CreateUsersTable extends Migration
 {
     public function up()
     {
-        Schema::create('tests', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->string('test_name');
-            $table->text('test_results');
+            // Adicione outros campos necessários para a tabela users
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
-    
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
-    
 
     public function down()
     {
         Schema::dropIfExists('users');
     }
 }
+

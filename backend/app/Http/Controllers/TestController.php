@@ -1,12 +1,11 @@
 <?php
 
-// app/Http/Controllers/TestController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Test;
 use App\Models\User;
+use App\Models\Client;
 use Validator;
 
 class TestController extends Controller
@@ -19,19 +18,19 @@ class TestController extends Controller
     // Listar todos os testes
     public function index()
     {
-        return response()->json(Test::with('user')->get(), 200);
-        //return response()->json(Test::all(), 200);
+        return response()->json(Test::with('user', 'client')->get(), 200);
     }
+    
+    // Listar todos os testes sem usuários e clientes
     public function index1()
     {
-       // return response()->json(Test::with('user')->get(), 200);
         return response()->json(Test::all(), 200);
     }
 
     // Exibir um teste específico
     public function show($id)
     {
-        $test = Test::findOrFail($id);
+        $test = Test::with(['user', 'client'])->findOrFail($id);
         return response()->json($test, 200);
     }
 
@@ -42,6 +41,7 @@ class TestController extends Controller
             'user_id' => 'required|exists:users,id',
             'test_name' => 'required|string|max:255',
             'test_results' => 'required|string',
+            'client_id' => 'required|exists:clients,id',
         ]);
 
         if ($validator->fails()) {
@@ -52,6 +52,7 @@ class TestController extends Controller
             'user_id' => $request->user_id,
             'test_name' => $request->test_name,
             'test_results' => $request->test_results,
+            'client_id' => $request->client_id,
         ]);
 
         return response()->json($test, 201);

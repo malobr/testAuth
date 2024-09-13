@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use App\Models\User;
 use Validator;
 
@@ -33,6 +34,29 @@ class AuthController extends Controller
     }
 
     // Login de um usuário
+  /*  public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $user = Auth::user();
+            $csrfToken = Str::random(40); // Geração do token CSRF
+
+            return response()->json([
+                'csrf_token' => $csrfToken,
+                'user' => $user,
+            ], 200);
+        }
+
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }*/
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -58,10 +82,12 @@ class AuthController extends Controller
         return response()->json(['message' => 'Unauthorized'], 401);
     }
 
+
     // Logout do usuário autenticado
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        // A lógica para logout não envolve exclusão de tokens Bearer aqui
+        // Simplesmente limpa a sessão ou CSRF token se necessário
         return response()->json(['message' => 'Logged out successfully'], 200);
     }
 
@@ -71,13 +97,12 @@ class AuthController extends Controller
         $users = User::with('tests')->get(); // Carrega todos os usuários com os testes relacionados
         return response()->json($users, 200);
     }
-    
     public function index1()
     {
-        return response()->json(User::all(), 200);
+        return response()->json(User::all(), 200);// carrega todos os usuarios
     }
 
-    
+
     // Exibir um usuário específico
     public function show($id)
     {

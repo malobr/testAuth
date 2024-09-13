@@ -6,20 +6,22 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Test extends Model
+class Test extends Model 
 {
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'test_name',
-        'test_results',
-    ];
+    protected $fillable = ['user_id', 'client_id', 'test_name', 'test_results'];
 
-    public function user(): BelongsTo
+    // Relacionamento com o usuário (dono da ótica)
+    public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Relacionamento com o cliente
+    public function client()
+    {
+        return $this->belongsTo(Client::class);
     }
 }
